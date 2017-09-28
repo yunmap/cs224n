@@ -101,7 +101,6 @@ def make_windowed_data(data, start, end, window_size = 1):
     ### YOUR CODE HERE (5-20 lines)
     #앞엔 start토큰. 뒤엔 end 토큰
         length = len(sentence)
-        l=0
         sentence = [start] * window_size + sentence + [end] * window_size
         #original sentence를 돌면서 계산한다.
         for i in range (window_size, window_size+length) :
@@ -109,7 +108,7 @@ def make_windowed_data(data, start, end, window_size = 1):
             for j in range(i-window_size, i+window_size+1) :
                 temp_features.extend(sentence[j])
 
-            temp_feature_label = (temp_features, labels[l])
+            temp_feature_label = (temp_features, labels[i-window_size])
             windowed_data.append(temp_feature_label)
             l+=1
     ### END YOUR CODE
