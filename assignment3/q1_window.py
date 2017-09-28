@@ -101,6 +101,7 @@ def make_windowed_data(data, start, end, window_size = 1):
     ### YOUR CODE HERE (5-20 lines)
     #앞엔 start토큰. 뒤엔 end 토큰
         length = len(sentence)
+        l=0
         sentence = [start] * window_size + sentence + [end] * window_size
         #original sentence를 돌면서 계산한다.
         for i in range (window_size, window_size+length) :
@@ -108,8 +109,9 @@ def make_windowed_data(data, start, end, window_size = 1):
             for j in range(i-window_size, i+window_size+1) :
                 temp_features.extend(sentence[j])
 
-            temp_feautre_label = (temp_features, labels[i])
-            windowed_data.append(temp_feautre_label)
+            temp_feature_label = (temp_features, labels[l])
+            windowed_data.append(temp_feature_label)
+            l+=1
     ### END YOUR CODE
     return windowed_data
 
@@ -142,7 +144,7 @@ class WindowModel(NERModel):
         (Don't change the variable names)
         """
         ### YOUR CODE HERE (~3-5 lines)
-        self.input_placeholder = tf.placeholder(tf.int32, [None, n_window_features])
+        self.input_placeholder = tf.placeholder(tf.int32, [None, self.n_window_features])
         self.labels_placeholder = tf.placeholder(tf.int32, [None,])
         self.dropout_placeholder = tf.placeholder(tf.float32) #scalar 한 칸 짜리
         ### END YOUR CODE
