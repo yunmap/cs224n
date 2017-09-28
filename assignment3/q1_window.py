@@ -37,7 +37,9 @@ class Config:
     n_word_features = 2 # Number of features for every word in the input.
     window_size = 1 # The size of the window to use.
     ### YOUR CODE HERE
-    n_window_features = 0 # The total number of features used for each window.
+    # 1은 bias
+    #window 수만큼 일단 start 토큰 들어간다. end도.
+    n_window_features = (2 * window_size + 1) * n_word_features # The total number of features used for each window.
     ### END YOUR CODE
     n_classes = 5
     dropout = 0.5
@@ -97,7 +99,17 @@ def make_windowed_data(data, start, end, window_size = 1):
     windowed_data = []
     for sentence, labels in data:
     ### YOUR CODE HERE (5-20 lines)
+    #앞엔 start토큰. 뒤엔 end 토큰
+        length = len(sentence)
+        sentence = [start] * window_size = sentence + [end] * window_size
+        #original sentence를 돌면서 계산한다.
+        for i in range (window_size, window_size+length) :
+            temp_features = []
+            for j in range(i-window_size, i+window_size+1) :
+                temp_features.extend(sentence[j])
 
+            temp_feautre_label = (temp_features, labels[i])
+            windowed_data.append(temp_feautre_label)
     ### END YOUR CODE
     return windowed_data
 
@@ -130,7 +142,9 @@ class WindowModel(NERModel):
         (Don't change the variable names)
         """
         ### YOUR CODE HERE (~3-5 lines)
-
+        self.input_placeholder = tf.placeholder(tf.int32, [None, n_window_features])
+        self.labels_placeholder = tf.placeholder(tf.int32, [None,])
+        self.dropout_placeholder = tf.placeholder(tf.float32) #scalar 한 칸 짜리
         ### END YOUR CODE
 
     def create_feed_dict(self, inputs_batch, labels_batch=None, dropout=1):
@@ -153,7 +167,10 @@ class WindowModel(NERModel):
             feed_dict: The feed dictionary mapping from placeholders to values.
         """
         ### YOUR CODE HERE (~5-10 lines)
-         
+        feed_dict = {self.input_placeholder:inputs_batch, self.dropout_placeholder:dropout}
+        if labels_batch is not None :
+            feed_dict = {self.input_placeholder:inputs_batch, self.dropout_placeholder:dropout, self.labels_placeholder:labels_batch}
+
         ### END YOUR CODE
         return feed_dict
 
@@ -174,8 +191,11 @@ class WindowModel(NERModel):
             embeddings: tf.Tensor of shape (None, n_window_features*embed_size)
         """
         ### YOUR CODE HERE (!3-5 lines)
-                                                             
-                                  
+        embeded = tf.Variable(self.pretrained_embeddings)
+        embeddings = tf.nn.embedding_lookup(embedded, self.input_placeholder)   
+        #embeddings = tf.reshape(embeddings, [None, self.config.n_window_features*self.config.embdding_size])                                                 
+        #None이 아니라 -1을 사용해야 한다고 하네.. reshape에서는
+        embeddings = tf.reshape(embeddings, [-1, self.config.n_window_features*self.config.embdding_size])                            
                                                                                                                  
         ### END YOUR CODE
         return embeddings
@@ -207,6 +227,18 @@ class WindowModel(NERModel):
         x = self.add_embedding()
         dropout_rate = self.dropout_placeholder
         ### YOUR CODE HERE (~10-20 lines)
+        #Xavier라는 방법으로 initialize하고, seed로 random을 지정한다.
+        b1 = tf.get_variable(name='b1', shape = [self.config.hidden_size,], initializer=tf.contrib.layers.xavier_initializer(seed=1))
+        b2 = tf.get_variable(name='b2', shape = [self.config.n_classes,], initializer=tf.contrib.layers.xavier_initializer(seed=2))
+        W = tf.get_variable(name='W', shape = [self.config.n_window_features * self.config.embed_size, self.config.hidden_size], initializer=tf.contrib.layers.xavier_initializer(seed=3))
+        U = tf.get_variable(name='U', shape = [self.config.hidden_size,self.config.n_classes], initializer=tf.contrib.layers.xavier_initializer(seed=4))
+        a1 = tf.matmul(x,W)
+        a1 += b1
+        h = tf.nn.relu(a1)
+        h_drop = tf.nn.dropout(h,dropout_rate)
+        pred = tf.matmul(h_drop,U)
+        pred += b2
+
 
         ### END YOUR CODE
         return pred
@@ -225,7 +257,9 @@ class WindowModel(NERModel):
             loss: A 0-d tensor (scalar)
         """
         ### YOUR CODE HERE (~2-5 lines)
-                                   
+        loss = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=pred, labels=self.labels_placeholder) 
+        loss = tf.reduce_mean(loss)
+
         ### END YOUR CODE
         return loss
 
@@ -249,7 +283,8 @@ class WindowModel(NERModel):
             train_op: The Op for training.
         """
         ### YOUR CODE HERE (~1-2 lines)
-
+        adamoptimizer = tf.train.AdamOptimizer(self.config.lr)
+        train_op = adamoptimizer(loss)
         ### END YOUR CODE
         return train_op
 

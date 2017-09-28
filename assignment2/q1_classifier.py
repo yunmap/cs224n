@@ -97,7 +97,7 @@ class SoftmaxModel(Model):
         W = tf.Variable(0)
         b = tf.Variable(0)
         x = self.input_placeholder
-        mul = tf.multiply(W,x)
+        mul = tf.matmul(W,x)
         mul += b
         pred = softmax(mul)
         ### END YOUR CODE
