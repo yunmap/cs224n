@@ -25,6 +25,9 @@ def softmax(x):
     """
 
     ### YOUR CODE HERE
+    #우선 x가 각 row가 한 sample을 나타내도록 되어 있음.
+    #그래서 axis=1 로 sum과 max를 해야 각 sample에 대한 결과가 나온다.
+    #keep_dims=true로 해둔 이유는 한 column의 형태로 각 sample에 대한 결과를 출력하기 위해.
     x_max = tf.reduce_max(x,1,keep_dims=True)
     x_sub = tf.subtract(x,x_max)
     #sub를 하면 max 값에서만 0이 되고, 나머지는 음수의 값을 가진다. 그래서 exp를 취하면 max(true class)는
@@ -32,6 +35,7 @@ def softmax(x):
     #softmax의 과정
     x_exp = tf.exp(x_sub)
     sum_exp = tf.reduce_sum(x_exp,1,keep_dims=True)
+    #sum_exp = tf.reduce_sum(x_exp)
     out = tf.div(x_exp,sum_exp)
     #out은 확률이라서
     ### END YOUR CODE
@@ -65,9 +69,11 @@ def cross_entropy_loss(y, yhat):
 
     ### YOUR CODE HERE
     log_yhat = tf.log(yhat)
-    y_mul = tf.multiply(y, log_yhat)
-    y_sum = tf.reduce_sum(y_mul,1,keep_dims=True)
-    out = tf.multiply(-1, y_sum)
+    #y_mul = tf.multiply(y, log_yhat) //y가 int32라고??? 머래는겨
+    y_mul = tf.multiply(tf.to_float(y), log_yhat)
+    #y_sum = tf.reduce_sum(y_mul,1,keep_dims=True)
+    y_sum = tf.reduce_sum(y_mul)
+    out = tf.multiply(-1.0, y_sum)
     ### END YOUR CODE
 
     return out
