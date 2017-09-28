@@ -144,7 +144,7 @@ class WindowModel(NERModel):
         (Don't change the variable names)
         """
         ### YOUR CODE HERE (~3-5 lines)
-        self.input_placeholder = tf.placeholder(tf.int32, [None, self.n_window_features])
+        self.input_placeholder = tf.placeholder(tf.int32, [None, self.config.n_window_features])
         self.labels_placeholder = tf.placeholder(tf.int32, [None,])
         self.dropout_placeholder = tf.placeholder(tf.float32) #scalar 한 칸 짜리
         ### END YOUR CODE
