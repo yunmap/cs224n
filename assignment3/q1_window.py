@@ -194,10 +194,10 @@ class WindowModel(NERModel):
         """
         ### YOUR CODE HERE (!3-5 lines)
         embeded = tf.Variable(self.pretrained_embeddings)
-        embeddings = tf.nn.embedding_lookup(embedded, self.input_placeholder)   
+        embeddings = tf.nn.embedding_lookup(embeded, self.input_placeholder)   
         #embeddings = tf.reshape(embeddings, [None, self.config.n_window_features*self.config.embdding_size])                                                 
         #None이 아니라 -1을 사용해야 한다고 하네.. reshape에서는
-        embeddings = tf.reshape(embeddings, [-1, self.config.n_window_features*self.config.embdding_size])                            
+        embeddings = tf.reshape(embeddings, [-1, self.config.n_window_features*self.config.embed_size])                            
                                                                                                                  
         ### END YOUR CODE
         return embeddings
@@ -286,7 +286,7 @@ class WindowModel(NERModel):
         """
         ### YOUR CODE HERE (~1-2 lines)
         adamoptimizer = tf.train.AdamOptimizer(self.config.lr)
-        train_op = adamoptimizer(loss)
+        train_op = adamoptimizer.minimize(loss)
         ### END YOUR CODE
         return train_op
 
