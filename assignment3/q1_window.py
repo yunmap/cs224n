@@ -110,7 +110,6 @@ def make_windowed_data(data, start, end, window_size = 1):
 
             temp_feature_label = (temp_features, labels[i-window_size])
             windowed_data.append(temp_feature_label)
-            l+=1
     ### END YOUR CODE
     return windowed_data
 
