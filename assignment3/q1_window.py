@@ -195,6 +195,7 @@ class WindowModel(NERModel):
         embeddings = tf.nn.embedding_lookup(embeded, self.input_placeholder)   
         #embeddings = tf.reshape(embeddings, [None, self.config.n_window_features*self.config.embdding_size])                                                 
         #None이 아니라 -1을 사용해야 한다고 하네.. reshape에서는
+        #어쨋든 reshape를 통해서 column 하나짜리 matrix (vector) 로 만든다.
         embeddings = tf.reshape(embeddings, [-1, self.config.n_window_features*self.config.embed_size])                            
                                                                                                                  
         ### END YOUR CODE
