@@ -115,7 +115,7 @@ def pad_sequences(data, max_length):
         elif (pad_zero<0) :
             pad_sentence = sentence[:max_length]
             pad_label = labels[:max_length]
-            mark = [True]*ori_length
+            mark = [True]*max_length
         else :
             pad_sentence = sentence
             pad_label = labels
