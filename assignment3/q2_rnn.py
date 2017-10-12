@@ -112,9 +112,13 @@ def pad_sequences(data, max_length):
             mark = [True]*ori_length
             mark.extend([False]*pad_zero)
             ### extend는 list와 list를 더하는 거고 append는 원소를 list에 추가한다.
-        elif (pad_zero==0):
+        elif (pad_zero<0) :
             pad_sentence = sentence[:max_length]
             pad_label = labels[:max_length]
+            mark = [True]*ori_length
+        else :
+            pad_sentence = sentence
+            pad_label = labels
             mark = [True]*ori_length
 
         ret.append((pad_sentence,pad_label,mark))
