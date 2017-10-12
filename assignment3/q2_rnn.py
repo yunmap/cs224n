@@ -111,6 +111,7 @@ def pad_sequences(data, max_length):
             ### 원래 token엔 true pad면 false
             mark = [True]*ori_length
             mark = mark.extend([False]*pad_zero)
+            ### extend는 list와 list를 더하는 거고 append는 원소를 list에 추가한다.
         else :
             pad_sentence = sentence
             pad_label = labels
