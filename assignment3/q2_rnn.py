@@ -93,7 +93,7 @@ def pad_sequences(data, max_length):
     Returns:
         a new list of data points of the structure (sentence', labels', mask).
         Each of sentence', labels' and mask are of length @max_length.
-        See the example above for more details.
+        See the example above for more details.ssss
     """
     ret = []
 
@@ -110,13 +110,13 @@ def pad_sequences(data, max_length):
             pad_label = labels + ([zero_vector]*pad_zero)
             ### 원래 token엔 true pad면 false
             mark = [True]*ori_length
-            mark = mark.append([False]*pad_zero)
+            mark = mark.extend([False]*pad_zero)
         else :
             pad_sentence = sentence
             pad_label = labels
             mark = [True]*ori_length
 
-        ret = ret.append((pad_sentence,pad_label,mark))
+        ret.append((pad_sentence,pad_label,mark))
         pass
         ### END YOUR CODE ###
     return ret
