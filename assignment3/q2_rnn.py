@@ -110,11 +110,11 @@ def pad_sequences(data, max_length):
             pad_label = labels + ([zero_vector]*pad_zero)
             ### 원래 token엔 true pad면 false
             mark = [True]*ori_length
-            mark = mark.extend([False]*pad_zero)
+            mark.extend([False]*pad_zero)
             ### extend는 list와 list를 더하는 거고 append는 원소를 list에 추가한다.
-        else :
-            pad_sentence = sentence
-            pad_label = labels
+        elif (pad_zero==0):
+            pad_sentence = sentence[:max_length]
+            pad_label = labels[:max_length]
             mark = [True]*ori_length
 
         ret.append((pad_sentence,pad_label,mark))
@@ -278,16 +278,28 @@ class RNNModel(NERModel):
         ### YOUR CODE HERE (~4-6 lines)
         U = tf.get_variable('U', (Config.hidden_size, Config.n_classes), initializer=tf.contrib.layers.xavier_initializer() )
         b2 = tf.get_variable('b2', (Config.n_classes), initializer=tf.constant_initializer(0.0) )
+        
+        ### tf.zeros,tf.shape를 사용해서 고쳐봐라
+        input_shape = tf.shape(x)
+        state = tf.zeros((input_shape[0], Config.hidden_size))
+
         ### END YOUR CODE
 
         with tf.variable_scope("RNN"):
             for time_step in range(self.max_length):
                 ### YOUR CODE HERE (~6-10 lines)
+                if time_step>0:
+                    tf.get_variable_scope().reuse_variables()
+                _, state = cell( x[:,time_step, :], state, scope="RNN" )
+                state_dropout = tf.nn.dropout(state, dropout_rate)
+                output = tf.matmul(state_dropout,U) + b2
+                preds.append(output)
                 pass
                 ### END YOUR CODE
 
         # Make sure to reshape @preds here.
         ### YOUR CODE HERE (~2-4 lines)
+        preds = tf.stack(preds, axis=1)
         ### END YOUR CODE
 
         assert preds.get_shape().as_list() == [None, self.max_length, self.config.n_classes], "predictions are not of the right shape. Expected {}, got {}".format([None, self.max_length, self.config.n_classes], preds.get_shape().as_list())
@@ -309,6 +321,12 @@ class RNNModel(NERModel):
             loss: A 0-d tensor (scalar)
         """
         ### YOUR CODE HERE (~2-4 lines)
+        masked_logits = tf.boolean_mask( preds, self.mask_placeholder)
+        masked_labels = tf.boolean_mask( self.labels_placeholder, self.mask_placeholder)
+        loss = tf.reduce_mean(
+            tf.nn.sparse_softmax_cross_entropy_with_logits( logits = masked_logits,
+                                                            labels = masked_labels )
+        )
         ### END YOUR CODE
         return loss
 
@@ -332,6 +350,7 @@ class RNNModel(NERModel):
             train_op: The Op for training.
         """
         ### YOUR CODE HERE (~1-2 lines)
+        train_op = tf.train.AdamOptimizer(Config.lr).minimize(loss)
         ### END YOUR CODE
         return train_op
 
