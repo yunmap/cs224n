@@ -67,15 +67,15 @@ class GRUCell(tf.nn.rnn_cell.RNNCell):
             ### YOUR CODE HERE (~20-30 lines)
             x_t = inputs
             h_t_1 = state
-            W_r = tf.get_variable('W_r', shape=(self.input_size, self.state_size),dtype=tf.float32, initializer=tf.contrib.layers.xavier_initializer())
+            W_r = tf.get_variable('W_r', shape=(self.state_size, self.state_size),dtype=tf.float32, initializer=tf.contrib.layers.xavier_initializer())
             U_r = tf.get_variable('U_r', shape=(self.input_size, self.state_size),dtype=tf.float32, initializer=tf.contrib.layers.xavier_initializer())
-            b_r = tf.get_variable('b_r', shape=self.state_size,dtype=tf.float32, initializer=tf.contrib.layers.xavier_initializer())
-            W_z = tf.get_variable('W_z', shape=(self.input_size, self.state_size),dtype=tf.float32, initializer=tf.contrib.layers.xavier_initializer())
+            b_r = tf.get_variable('b_r', shape=(self.state_size,),dtype=tf.float32, initializer=tf.contrib.layers.xavier_initializer())
+            W_z = tf.get_variable('W_z', shape=(self.state_size, self.state_size),dtype=tf.float32, initializer=tf.contrib.layers.xavier_initializer())
             U_z = tf.get_variable('U_z', shape=(self.input_size, self.state_size),dtype=tf.float32, initializer=tf.contrib.layers.xavier_initializer())
-            b_z = tf.get_variable('b_z', shape=self.state_size,dtype=tf.float32, initializer=tf.contrib.layers.xavier_initializer())
-            W_o = tf.get_variable('W_o', shape=(self.input_size, self.state_size),dtype=tf.float32, initializer=tf.contrib.layers.xavier_initializer())
+            b_z = tf.get_variable('b_z', shape=(self.state_size,),dtype=tf.float32, initializer=tf.contrib.layers.xavier_initializer())
+            W_o = tf.get_variable('W_o', shape=(self.state_size, self.state_size),dtype=tf.float32, initializer=tf.contrib.layers.xavier_initializer())
             U_o = tf.get_variable('U_o', shape=(self.input_size, self.state_size),dtype=tf.float32, initializer=tf.contrib.layers.xavier_initializer())
-            b_o = tf.get_variable('b_o', shape=self.state_size,dtype=tf.float32, initializer=tf.contrib.layers.xavier_initializer())
+            b_o = tf.get_variable('b_o', shape=(self.state_size,),dtype=tf.float32, initializer=tf.contrib.layers.xavier_initializer())
             
             z_t = tf.nn.sigmoid(tf.matmul(x_t,U_z)+tf.matmul(state,W_z)+b_z)
             r_t = tf.nn.sigmoid(tf.matmul(x_t,U_r)+tf.matmul(state,W_r)+b_r)
