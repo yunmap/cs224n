@@ -107,7 +107,7 @@ def pad_sequences(data, max_length):
         pad_zero = max_length - ori_length
         if (pad_zero>0) :
             pad_sentence = sentence + ([zero_vector]*pad_zero)
-            pad_label = labels + ([zero_vector]*pad_zero)
+            pad_label = labels + ([zero_label]*pad_zero)
             ### 원래 token엔 true pad면 false
             mark = [True]*ori_length
             mark.extend([False]*pad_zero)
