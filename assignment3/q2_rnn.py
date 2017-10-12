@@ -103,6 +103,20 @@ def pad_sequences(data, max_length):
 
     for sentence, labels in data:
         ### YOUR CODE HERE (~4-6 lines)
+        ori_length = len(sentence)
+        pad_zero = max_length - ori_length
+        if (pad_zero>0) :
+            pad_sentence = sentence + ([zero_vector]*pad_zero)
+            pad_label = labels + ([zero_vector]*pad_zero)
+            ### 원래 token엔 true pad면 false
+            mark = [True]*ori_length
+            mark.append = [False]*pad_zero
+        else :
+            pad_sentence = sentence
+            pad_label = labels
+            mark = [True]*ori_length
+
+        ret = ret.append((pad_sentence,pad_label,mark))
         pass
         ### END YOUR CODE ###
     return ret
@@ -141,6 +155,10 @@ class RNNModel(NERModel):
         (Don't change the variable names)
         """
         ### YOUR CODE HERE (~4-6 lines)
+        self.input_placeholder = tf.placeholder(shape = (None, self.max_length, n_features), type = tf.int32)
+        self.labels_placeholder = tf.placeholder(shape = (None, self.max_length), type = tf.int32)
+        self.mask_placeholder = tf.placeholder(shape = (None, self.max_length), type = tf.bool)
+        self.dropout_placeholder = tf.placeholder(shape = None, type = tf.float32)
         ### END YOUR CODE
 
     def create_feed_dict(self, inputs_batch, mask_batch, labels_batch=None, dropout=1):
@@ -166,6 +184,10 @@ class RNNModel(NERModel):
             feed_dict: The feed dictionary mapping from placeholders to values.
         """
         ### YOUR CODE (~6-10 lines)
+        if (labels_batch is None) :
+            feed_dict = {self.input_placeholder : inputs_batch, self.mask_placeholder : mask_batch, self.dropout_placeholder : dropout}
+        else :
+            feed_dict = {self.input_placeholder : inputs_batch, self.mask_placeholder : mask_batch, self.labels_placeholder : labels_batch, self.dropout_placeholder : dropout}
         ### END YOUR CODE
         return feed_dict
 
@@ -190,6 +212,7 @@ class RNNModel(NERModel):
             embeddings: tf.Tensor of shape (None, max_length, n_features*embed_size)
         """
         ### YOUR CODE HERE (~4-6 lines)
+        
         ### END YOUR CODE
         return embeddings
 
