@@ -110,7 +110,7 @@ def pad_sequences(data, max_length):
             pad_label = labels + ([zero_vector]*pad_zero)
             ### 원래 token엔 true pad면 false
             mark = [True]*ori_length
-            mark.append = [False]*pad_zero
+            mark = mark.append([False]*pad_zero)
         else :
             pad_sentence = sentence
             pad_label = labels
@@ -212,7 +212,8 @@ class RNNModel(NERModel):
             embeddings: tf.Tensor of shape (None, max_length, n_features*embed_size)
         """
         ### YOUR CODE HERE (~4-6 lines)
-        
+        embeddings = tf.nn.embedding_lookup(tf.Variable(self.pretrained_embeddings), self.input_placeholder)
+        embeddings = tf.reshape(embeddings, [-1, self.max_length, Config.n_features* Config.embed_size])
         ### END YOUR CODE
         return embeddings
 
@@ -274,6 +275,8 @@ class RNNModel(NERModel):
         # Define U and b2 as variables.
         # Initialize state as vector of zeros.
         ### YOUR CODE HERE (~4-6 lines)
+        U = tf.get_variable('U', (Config.hidden_size, Config.n_classes), initializer=tf.contrib.layers.xavier_initializer() )
+        b2 = tf.get_variable('b2', (Config.n_classes), initializer=tf.constant_initializer(0.0) )
         ### END YOUR CODE
 
         with tf.variable_scope("RNN"):
