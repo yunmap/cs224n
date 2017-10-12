@@ -69,7 +69,7 @@ def pad_sequences(data, max_length):
     (a) create a new sentence which appends zero feature vectors until
     the sentence is of length @max_length. If the sentence is longer
     than @max_length, simply truncate the sentence to be @max_length
-    long.
+    long. ////cut
     (b) create a new label sequence similarly.
     (c) create a _masking_ sequence that has a True wherever there was a
     token in the original sequence, and a False for every padded input.
