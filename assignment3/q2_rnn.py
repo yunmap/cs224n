@@ -160,10 +160,10 @@ class RNNModel(NERModel):
         (Don't change the variable names)
         """
         ### YOUR CODE HERE (~4-6 lines)
-        self.input_placeholder = tf.placeholder(shape = (None, self.max_length, n_features), type = tf.int32)
-        self.labels_placeholder = tf.placeholder(shape = (None, self.max_length), type = tf.int32)
-        self.mask_placeholder = tf.placeholder(shape = (None, self.max_length), type = tf.bool)
-        self.dropout_placeholder = tf.placeholder(shape = None, type = tf.float32)
+        self.input_placeholder = tf.placeholder(shape = (None, self.max_length, Config.n_features), dtype = tf.int32)
+        self.labels_placeholder = tf.placeholder(shape = (None, self.max_length), dtype = tf.int32)
+        self.mask_placeholder = tf.placeholder(shape = (None, self.max_length), dtype = tf.bool)
+        self.dropout_placeholder = tf.placeholder(shape = None, dtype = tf.float32)
         ### END YOUR CODE
 
     def create_feed_dict(self, inputs_batch, mask_batch, labels_batch=None, dropout=1):
